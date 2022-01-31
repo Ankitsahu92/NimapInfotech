@@ -22,13 +22,23 @@ $(document).ready(function () {
 
 $(document).on("click", ".btnDelete", function () {
     var data = table.row($(this).parents('tr')).data();
-    console.log(data);
-    $('#myModal').modal('show');
+    $.ajax({
+        type: "Delete",
+        url: "/Category/DeleteCategory?id=" + data.id,
+        cache: false,
+        success: function (data) {
+            if (data.success) {
+                table.ajax.reload();
+                alert("Record Deleted Successfully!!!");
+            } else {
+                alert("Something Went Wrong!!!");
+            }
+        }
+    });
 });
 
 $(document).on("click", ".btnUpdate", function () {
     var data = table.row($(this).parents('tr')).data();
-    console.log(data);
     $.ajax({
         type: "POST",
         url: "/Category/AddCategory",
@@ -50,6 +60,26 @@ $(document).on("click", "#btnCreate", function () {
         success: function (data) {
             $("#myModal").html(data);
             $('#myModal').modal('show');
+        }
+    });
+});
+
+
+
+$(document).on("click", "#btnSave", function () {
+    $.ajax({
+        type: "POST",
+        url: "/Category/SaveAddCategory",
+        data: { Id: +$('#hdnCategoryID').val(), Name: $('#txtCategoryName').val()},
+        cache: false,
+        success: function (data) {
+            if (data.success) {
+                $('#myModal').modal('hide');
+                table.ajax.reload();
+                alert("Record Added/Updated Successfully!!!");
+            } else {
+                alert("Something Went Wrong!!!");
+            }
         }
     });
 });

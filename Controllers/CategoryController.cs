@@ -15,21 +15,68 @@ namespace NimapInfotech.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            
+
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> AddCategory(AddCategory model)
         {
-            try
-            {
-                return PartialView("_AddCategory", model);
-            }
-            catch (Exception ex)
-            {
+            return PartialView("_AddCategory", model);
+        }
 
-                throw;
+        [HttpPost]
+        public async Task<IActionResult> SaveAddCategory(AddCategory model)
+        {
+            bool isSuccess = false;
+            if (model.Id > 0)
+            {
+                var data = await this.dbContext.CategoryMaster.FirstOrDefaultAsync(f => f.Id == model.Id);
+                if (data != null)
+                {
+                    data.Name = model.Name;
+                    data.ModifiedBy = "yashi";
+                    data.ModifiedOn = DateTime.Now;
+                    this.dbContext.CategoryMaster.Update(data);
+                }
             }
+            else
+            {
+                var obj = new CategoryMaster()
+                {
+                    Name = model.Name,
+                    CreatedOn = DateTime.Now,
+                    CreatedBy = "yashi"
+                };
+                await this.dbContext.CategoryMaster.AddAsync(obj); ;
+            }
+
+            int record = await this.dbContext.SaveChangesAsync();
+            isSuccess = record > 0;
+
+            return Json(new { success = isSuccess, model });
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            bool isSuccess = false;
+            if (id > 0)
+            {
+                var data = await this.dbContext.CategoryMaster.FirstOrDefaultAsync(f => f.Id == id);
+                if (data != null)
+                {
+                    data.isActive = false;
+                    data.ModifiedBy = "yashi";
+                    data.ModifiedOn = DateTime.Now;
+                    this.dbContext.CategoryMaster.Update(data);
+                }
+            }
+
+            int record = await this.dbContext.SaveChangesAsync();
+            isSuccess = record > 0;
+
+            return Json(new { success = isSuccess });
         }
 
         [HttpPost]
@@ -50,45 +97,23 @@ namespace NimapInfotech.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecord = 0;
                 int filteredRecord = 0;
-                JsonResult json;
-                data = await this.dbContext.CategoryMaster.ToListAsync();
-                //if (string.IsNullOrWhiteSpace(search))
-                //{
-                //    var res = result.lstMapMarkers.AsQueryable();
-                //    var v = (from item in res select item);
-                //    //if (!(string.IsNullOrEmpty(sortColumn) && !(string.IsNullOrEmpty(sortColumnDir))))
-                //    //{
-                //    //    v = v.OrderBy(sortColumn + " " + sortColumnDir);
-                //    //}
-                //    filteredRecord = v.ToList().Count();
-                //    data = pageSize == -1 ? v.ToList() : v.Skip(skip).Take(pageSize).ToList();
-                //}
-                //else
-                //{
-                //    var res = result.lstMapMarkers.AsEnumerable().Where(p => (p.AssetCodeName != null && p.AssetCodeName.ToLower().Contains(search)) ||
-                //                 (p.Asset_Name != null && p.Asset_Name.ToLower().Contains(search)) ||
-                //                 (p.Job_Code != null && p.Job_Code.ToLower().Contains(search)) ||
-                //                 (p.Job_Desc != null && p.Job_Desc.ToLower().Contains(search)) ||
-                //                 (p.Asset_Type != null && p.Asset_Type.ToLower().Contains(search)) ||
-                //                 (p.LastReportDate != null && p.LastReportDate.ToLower().Contains(search)) ||
-                //                 (p.Asset_Status != null && p.Asset_Status.ToLower().Contains(search)) ||
-                //                 (p.AvgEngineOnHours != null && p.AvgEngineOnHours.ToLower().Contains(search)) ||
-                //                 (p.WorkingHrs != null && p.WorkingHrs.ToLower().Contains(search)) ||
-                //                 (p.WorkDoneHrs != null && p.WorkDoneHrs.ToLower().Contains(search))
-                //           ).AsQueryable();
-                //    var v = (from item in res select item);
-                //    if (!(string.IsNullOrEmpty(sortColumn) && !(string.IsNullOrEmpty(sortColumnDir))))
-                //    {
-                //        //v = v.OrderBy(sortColumn + " " + sortColumnDir);
-                //        //v = v.OrderBy(sortColumn);
-                //    }
-                //    //if (!(string.IsNullOrEmpty(sortColumn)))
-                //    //v = v.OrderBy(a => a. sortColumn);
-                //    filteredRecord = v.ToList().Count();
-                //    data = pageSize == -1 ? v.ToList() : v.Skip(skip).Take(pageSize).ToList();
-                //}
+                data = await this.dbContext.CategoryMaster.Where(f => f.isActive == true).ToListAsync();
+                if (string.IsNullOrWhiteSpace(search))
+                {
+                    var res = data.AsQueryable();
+                    var v = (from item in res select item);
+                    filteredRecord = v.ToList().Count();
+                    data = pageSize == -1 ? v.ToList() : v.Skip(skip).Take(pageSize).ToList();
+                }
+                else
+                {
+                    var res = data.AsEnumerable().Where(p => (p.Name != null && p.Name.ToLower().Contains(search))).AsQueryable();
+                    var v = (from item in res select item);
+                    filteredRecord = v.ToList().Count();
+                    data = pageSize == -1 ? v.ToList() : v.Skip(skip).Take(pageSize).ToList();
+                }
 
-                filteredRecord = totalRecord;
+                totalRecord = filteredRecord;
 
                 return Ok(new
                 {
