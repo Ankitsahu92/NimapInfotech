@@ -107,7 +107,9 @@ namespace NimapInfotech.Controllers
                 }
                 else
                 {
-                    var res = data.AsEnumerable().Where(p => (p.Name != null && p.Name.ToLower().Contains(search))).AsQueryable();
+                    var res = data.AsEnumerable().Where(p => (
+                       p.Name != null && p.Name.ToLower().Contains(search)
+                    || p.Id.ToString().Contains(search))).AsQueryable();
                     var v = (from item in res select item);
                     filteredRecord = v.ToList().Count();
                     data = pageSize == -1 ? v.ToList() : v.Skip(skip).Take(pageSize).ToList();

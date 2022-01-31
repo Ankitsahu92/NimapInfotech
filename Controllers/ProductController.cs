@@ -115,6 +115,10 @@ namespace NimapInfotech.Controllers
                 int totalRecord = 0;
                 int filteredRecord = 0;
                 data = await this.dbContext.ProductMaster.Include(c => c.CategoryMaster).Where(f => f.isActive == true).ToListAsync();
+                foreach (var item in data)
+                {
+                    item.CategoryMasterName = item?.CategoryMaster?.Name;
+                }
                 if (string.IsNullOrWhiteSpace(search))
                 {
                     var res = data.AsQueryable();
@@ -124,17 +128,18 @@ namespace NimapInfotech.Controllers
                 }
                 else
                 {
-                    var res = data.AsEnumerable().Where(p => (p.Name != null && p.Name.ToLower().Contains(search))).AsQueryable();
+                    var res = data.AsEnumerable().Where(p => (p.Name != null && p.Name.ToLower().Contains(search)
+                    || p.CategoryMasterName != null && p.CategoryMasterName.ToLower().Contains(search)
+                    || p.CategoryId.ToString().Contains(search)
+                    || p.Id.ToString().Contains(search)
+                    )).AsQueryable();
                     var v = (from item in res select item);
                     filteredRecord = v.ToList().Count();
                     data = pageSize == -1 ? v.ToList() : v.Skip(skip).Take(pageSize).ToList();
                 }
 
                 totalRecord = filteredRecord;
-                foreach (var item in data)
-                {
-                    item.CategoryMasterName = item?.CategoryMaster?.Name;
-                }
+
                 return Ok(new
                 {
                     draw,
