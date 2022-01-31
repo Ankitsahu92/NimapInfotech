@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NimapInfotech.Entity;
+using NimapInfotech.Models;
 using NimapInfotech.Models.EntityModels;
 
 namespace NimapInfotech.Controllers
@@ -17,6 +18,20 @@ namespace NimapInfotech.Controllers
             
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> AddCategory(AddCategory model)
+        {
+            try
+            {
+                return PartialView("_AddCategory", model);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> LoadCategoryMaster()
         {
