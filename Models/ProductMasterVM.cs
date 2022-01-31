@@ -15,10 +15,10 @@ namespace NimapInfotech.Models
 
         [ForeignKey("CategoryMaster")]
         [Required]
-        public int DepartmentId { get; set; }
+        public int CategoryId { get; set; }
 
         [NotMapped]
-        public string DepartmentName { get; set; }
+        public string CategoryMasterName { get; set; }
 
         public virtual CategoryMaster CategoryMaster { get; set; }
     }

@@ -1,0 +1,35 @@
+﻿@using NimapInfotech.Models.EntityModels
+@model AddProduct;
+@{
+    string SaveBtnText = Model?.Id > 0 ? "Update" : "Save";
+}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <input type="hidden" asp-for="Id" id="hdnProductID" />
+            <div class="mb-3">
+                <label for="Name" class="form-label">Name</label>
+                <input type="text" class="form-control" asp-for="Name" id="txtProductName">
+            </div>
+            <div class="mb-3">
+                <label for="Category" class="form-label">Category</label>
+                <select asp-for="CategoryID" class="form-control" id="ddlCategoryID"
+                        asp-items="Model.CategoryMasterList">
+                    <option>--Select--</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="btnSave" type="button" class="btn btn-primary">
+                @SaveBtnText
+            </button>
+        </div>
+    </div>
+</div>

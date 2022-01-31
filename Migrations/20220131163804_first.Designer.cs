@@ -12,8 +12,8 @@ using NimapInfotech.Entity;
 namespace NimapInfotech.Migrations
 {
     [DbContext(typeof(NimapInfotechContext))]
-    [Migration("20220131071102_third")]
-    partial class third
+    [Migration("20220131163804_first")]
+    partial class first
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -68,7 +68,7 @@ namespace NimapInfotech.Migrations
                         {
                             Id = 1,
                             CreatedBy = "Yashi",
-                            CreatedOn = new DateTime(2022, 1, 31, 12, 41, 2, 2, DateTimeKind.Local).AddTicks(5478),
+                            CreatedOn = new DateTime(2022, 1, 31, 22, 8, 4, 611, DateTimeKind.Local).AddTicks(9344),
                             Name = "Entertainment",
                             isActive = true
                         });
@@ -82,6 +82,9 @@ namespace NimapInfotech.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -91,9 +94,6 @@ namespace NimapInfotech.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -114,7 +114,7 @@ namespace NimapInfotech.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("ProductMaster");
 
@@ -122,9 +122,9 @@ namespace NimapInfotech.Migrations
                         new
                         {
                             Id = 1,
+                            CategoryId = 1,
                             CreatedBy = "Yashi",
-                            CreatedOn = new DateTime(2022, 1, 31, 12, 41, 2, 2, DateTimeKind.Local).AddTicks(5575),
-                            DepartmentId = 1,
+                            CreatedOn = new DateTime(2022, 1, 31, 22, 8, 4, 611, DateTimeKind.Local).AddTicks(9421),
                             Name = "Prime Video",
                             isActive = true
                         });
@@ -134,7 +134,7 @@ namespace NimapInfotech.Migrations
                 {
                     b.HasOne("NimapInfotech.Models.EntityModels.CategoryMaster", "CategoryMaster")
                         .WithMany()
-                        .HasForeignKey("DepartmentId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
